@@ -4,4 +4,4 @@ import Modules.DayThree
 
 main :: IO ()
 main = do
-    rund3
+    rund4
