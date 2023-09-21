@@ -1,18 +1,9 @@
 r:
-	ghc src/day${d}.hs -o build/day${d}
-	rm src/day${d}.hi src/day${d}.o
-	./build/day${d}
+	cabal build
+	cabal run
 
 b:
-	ghc src/day${d}.hs -o build/day${d}
-	rm src/day${d}.hi src/day${d}.o
+	cabal build
 
-f:
-	ghc -O2 src/day${d}.hs -o build/day${d}
-	rm src/day${d}.hi src/day${d}.o
-
-e:
-	./build/day${d}
-
-n:
-	touch src/day${d}.hs data/day${d}.txt
+n: 
+	touch app/modules/Day${d}.hs data/day${d}.txt

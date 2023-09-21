@@ -1,3 +1,5 @@
+module Modules.DayThree (rund3) where
+
 import Data.Char (digitToInt)
 
 type Index = Int
@@ -24,9 +26,9 @@ epsilonRating xs index
 binToDec :: Bits -> Int
 binToDec xs = fst $ foldr (\x (acc, i) -> (acc + x * (2 ^ i), i + 1)) (0, 0) xs
 
-main :: IO ()
-main = do
-  contents <- readFile "./data/day3.txt"
+rund3 :: IO ()
+rund3 = do
+  contents <- readFile "./data/dayThree.txt"
   let bitsList = map (map digitToInt) $ lines contents
   let gammaRate = binToDec $ mostCommonBits bitsList
   let epsilonRate = binToDec $ map (\x -> if x == 0 then 1 else 0) $ mostCommonBits bitsList
