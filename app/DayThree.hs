@@ -6,6 +6,7 @@ type Index = Int
 type Bits = [Int]
 
 mostCommonBits :: [Bits] -> Bits
+mostCommonBits [] = error "Most common bits called with no bits"
 mostCommonBits (first : xs) = map (\(x, y) -> if x > y then 0 else 1) $ foldr (addTuples . tupleIze) (tupleIze first) xs
   where
     tupleIze = map (\x -> if x == 0 then (1, 0) else (0, 1))
@@ -24,7 +25,7 @@ epsilonRating xs index
   | otherwise = epsilonRating (filter (\ys -> ys !! index /= mostCommonBits xs !! index) xs) (index + 1)
 
 binToDec :: Bits -> Int
-binToDec xs = fst $ foldr (\x (acc, i) -> (acc + x * (2 ^ i), i + 1)) (0, 0) xs
+binToDec bits = fst $ foldr (\bit (acc, power) -> (acc + bit * (2 ^ power), power + 1)) (0, 0) bits
 
 rund3 :: IO ()
 rund3 = do

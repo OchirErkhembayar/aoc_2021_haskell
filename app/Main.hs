@@ -3,4 +3,4 @@ import DayFour
 import DayThree
 
 main :: IO ()
-main = rund4
+main = putStrLn "Day 3" >> rund3 >> putStrLn "Day 4" >> rund4
