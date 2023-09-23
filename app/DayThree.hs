@@ -3,6 +3,7 @@ module DayThree (rund3) where
 import Data.Char (digitToInt)
 
 type Index = Int
+
 type Bits = [Int]
 
 mostCommonBits :: [Bits] -> Bits
