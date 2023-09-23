@@ -1,4 +1,4 @@
-module Modules.DayThree (rund3) where
+module DayThree (rund3) where
 
 import Data.Char (digitToInt)
 

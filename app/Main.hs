@@ -1,7 +1,6 @@
 module Main where
-import Modules.DayFour
-import Modules.DayThree
+import DayFour
+import DayThree
 
 main :: IO ()
-main = do
-    rund4
+main = rund4
