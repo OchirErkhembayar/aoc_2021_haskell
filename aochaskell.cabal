@@ -71,7 +71,8 @@ executable aoc_2021_haskell
     -- Other library packages from which modules are imported.
     build-depends:    
         base,
-        split
+        split,
+        QuickCheck
 
     -- Directories containing source files.
     hs-source-dirs:   app

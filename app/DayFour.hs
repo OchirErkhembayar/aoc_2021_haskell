@@ -43,20 +43,20 @@ checkBoards (board : rest) lastNumber = case checkBoard 0 of
       where
         score = lastNumber * foldr (\x acc -> acc + foldr (\y carry -> if not $ snd y then carry + fst y else carry) 0 x) 0 board
 
-winLast :: [Board] -> [Int] -> Int
-winLast [] _ = error "Winning board not found"
-winLast _ [] = error "Ran out of numbers before a winning board was found"
-winLast boards (number : rest)
-  | length filteredBoards == 1 = runGame filteredBoards rest
-  | otherwise = winLast filteredBoards rest
+partTwo :: [Board] -> [Int] -> Int
+partTwo [] _ = error "Winning board not found"
+partTwo _ [] = error "Ran out of numbers before a winning board was found"
+partTwo boards (number : rest)
+  | length filteredBoards == 1 = partOne filteredBoards rest
+  | otherwise = partTwo filteredBoards rest
   where
     filteredBoards = filterWon (updateBoards number boards)
 
-runGame :: [Board] -> [Int] -> Int
-runGame _ [] = error "Ran out of numbers before a winning board was found"
-runGame boards (number : rest) = case checkBoards (updateBoards number boards) number of
+partOne :: [Board] -> [Int] -> Int
+partOne _ [] = error "Ran out of numbers before a winning board was found"
+partOne boards (number : rest) = case checkBoards (updateBoards number boards) number of
   Just score -> score
-  Nothing -> runGame (updateBoards number boards) rest
+  Nothing -> partOne (updateBoards number boards) rest
 
 rund4 :: IO ()
 rund4 = do
@@ -65,8 +65,8 @@ rund4 = do
   let firstLine = map (\x -> read x :: Int) $ splitOn "," $ head allLines
   let restLines = map (map (\y -> read y :: Int) . words) $ tail $ tail allLines
   let boards = toBoards restLines
-  print $ winLast boards firstLine
-  print $ runGame boards firstLine
+  print $ partTwo boards firstLine
+  print $ partOne boards firstLine
   where
     toBoards :: [[Int]] -> [Board]
     toBoards numbers = mapBoards $ splitWhen null numbers
