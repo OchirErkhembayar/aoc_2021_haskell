@@ -1,6 +1,6 @@
 {-# LANGUAGE TupleSections #-}
 
-module DayFour (rund4) where
+module Day4 (rund4) where
 
 import Data.List.Split (splitOn, splitWhen)
 

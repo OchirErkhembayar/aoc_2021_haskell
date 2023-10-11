@@ -11,4 +11,4 @@ b:
 	cabal build
 
 n: 
-	touch app/Day${d}.hs data/day${d}.txt
+	touch app/Day${d}.hs data/day${d}.txt data/day${d}t.txt

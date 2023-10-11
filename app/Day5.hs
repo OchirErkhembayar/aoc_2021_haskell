@@ -1,4 +1,4 @@
-module DayFive where
+module Day5 where
 
 import Data.List.Split (splitOn)
 import qualified Data.Map as M
