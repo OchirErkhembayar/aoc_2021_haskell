@@ -5,6 +5,7 @@ import Day5
 import Day6
 import Day7
 import Day8
+import Day9
 
 run :: Int -> IO ()
 run day = case day of
@@ -14,6 +15,7 @@ run day = case day of
     6 -> Day6.rund6
     7 -> Day7.rund7
     8 -> Day8.rund8
+    9 -> Day9.rund9
     _ -> error "Wrong day"
 
 main :: IO ()

@@ -102,4 +102,3 @@ rund8 = do
   let codeMap = createCodeMap $ input $ head ioRows -- map of current row
   print $ convertRow codeMap (input $ head ioRows)
   print $ sum $ map decode ioRows
-  print "8"

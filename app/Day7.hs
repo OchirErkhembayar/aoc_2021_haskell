@@ -5,7 +5,9 @@ import Data.List.Split (splitOn)
 bestPosition :: [Int] -> Int
 bestPosition crabs = foldr (min . fuelUsage crabs) (fuelUsage crabs firstCrab) restCrabs
   where
-    firstCrab : restCrabs = [minimum crabs .. maximum crabs]
+    allCrabs = [minimum crabs .. maximum crabs]
+    firstCrab = head allCrabs
+    restCrabs = tail allCrabs
 
 fuelUsage :: [Int] -> Int -> Int
 fuelUsage crabs target =

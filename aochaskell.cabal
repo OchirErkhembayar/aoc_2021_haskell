@@ -62,12 +62,13 @@ executable aoc_2021_haskell
 
     -- Modules included in this executable, other than Main.
     other-modules:
-        Day3,
-        Day4,
-        Day5,
-        Day6,
-        Day7,
-        Day8
+          Day3
+        , Day4
+        , Day5
+        , Day6
+        , Day7
+        , Day8
+        , Day9
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
