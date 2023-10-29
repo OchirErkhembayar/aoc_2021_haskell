@@ -1,49 +1,103 @@
 module Day9 (rund9) where
 
+import Data.List (sortBy)
 import Data.List.Split (splitOn)
+import Data.Ord (comparing)
+import qualified Data.Ord
 
-type Height = Int
+type Pool = [GridPoint]
 
-type Position = Int
+data GridPoint = GridPoint
+  { location :: (Int, Int),
+    height :: Int
+  }
+  deriving (Show, Eq)
 
-type Point = (Height, Position)
-
-type Grid = [[Point]]
-
-type Row = Int
-
-findLowestPoints :: Grid -> [Point]
-findLowestPoints grid = foldl (\acc row -> acc ++ filterRow grid row (grid !! row)) [] [0 .. (length grid - 1)]
-
-isLowPoint :: Point -> [Point] -> Bool
-isLowPoint point = all (> point)
-
-filterRow :: Grid -> Row -> [Point] -> [Point]
-filterRow grid row = filter (\point -> isLowPoint point $ findAdjacents grid row point)
-
--- findAdjacentsForRow :: Grid -> Row -> [Point]
--- findAdjacentsForRow grid row =
---     let points = grid!!row
---     in foldl (\acc point -> acc ++ findAdjacents grid row point) [] points
-
-findAdjacents :: Grid -> Row -> Point -> [Point]
-findAdjacents grid row (height, col)
-  | row == 0 = [left, right, bottom]
-  | row == lastRow = [left, right, top]
-  | otherwise = [left, right, top, bottom]
+intoPools :: [GridPoint] -> [Pool] -> [Pool]
+intoPools gps pools = if null nonNines then pools else intoPools newGrid newPools
   where
-    lastRow = length grid - 1
-    currentRow = grid !! row
-    left = if col > 0 then currentRow !! (col - 1) else (height + 1, col)
-    right = if col < (length currentRow - 1) then currentRow !! (col + 1) else (height + 1, col)
-    top = if row > 0 then grid !! (row - 1) !! col else (height + 1, col)
-    bottom = if row < (length grid - 1) then grid !! (row + 1) !! col else (height + 1, col)
+    nonNines = filter (\gp -> height gp /= 9) gps
+    (newPool, newGrid) = createPool gps (head nonNines) []
+    newPools = newPool : pools
+
+createPool :: [GridPoint] -> GridPoint -> Pool -> (Pool, [GridPoint])
+createPool gps gp pool = newPoolAndGrid
+  where
+    newPoints = filter (\p -> height p /= 9) (findNeighbours gps gp)
+    newGridPts = removePoint gps gp
+    newPool = combinePoolsUniq pool newPoints
+    newPoolAndGrid = foldr (\p (accPool, newPts) -> createPool newPts p accPool) (addIfContains newPool gp, newGridPts) newPoints
+
+combinePoolsUniq :: Pool -> Pool -> Pool
+combinePoolsUniq p1 p2 = p1 ++ filter (`notElem` p1) p2
+
+addIfContains :: Pool -> GridPoint -> Pool
+addIfContains pool gp = if gp `elem` pool then pool else gp : pool
+
+findNeighbours :: [GridPoint] -> GridPoint -> [GridPoint]
+findNeighbours gps gp = filter (isNeighbour gp) gps
+
+isNeighbour :: GridPoint -> GridPoint -> Bool
+isNeighbour original comparitor = isBeside || isAboveOrBelow
+  where
+    (x1, y1) = location original
+    (x2, y2) = location comparitor
+    left = x1 - x2 == 1
+    right = x1 - x2 == -1
+    top = y1 - y2 == 1
+    bottom = y1 - y2 == -1
+    vertical = x1 == x2
+    horizontal = y1 == y2
+    isBeside = (left || right) && horizontal
+    isAboveOrBelow = (top || bottom) && vertical
+
+removePoint :: [GridPoint] -> GridPoint -> [GridPoint]
+removePoint gps gp = filter (\p -> location p /= location gp) gps
+
+findLowPoints :: [GridPoint] -> [GridPoint]
+findLowPoints gps =
+  filter
+    ( \gp ->
+        isLowPoint
+          gp
+          (findAdjacents gps gp)
+    )
+    gps
+
+isLowPoint :: GridPoint -> [GridPoint] -> Bool
+isLowPoint gp = all (\p -> height p > height gp)
+
+findAdjacents :: [GridPoint] -> GridPoint -> [GridPoint]
+findAdjacents gps gp = filter (adjacent gp) gps
+
+adjacent :: GridPoint -> GridPoint -> Bool
+adjacent gp1 gp2 = beside || aboveOrBelow
+  where
+    (x1, y1) = location gp1
+    (x2, y2) = location gp2
+    beside = (abs (x1 - x2) == 1) && (y1 == y2)
+    aboveOrBelow = (abs (y1 - y2) == 1) && (x1 == x2)
+
+makeGridPoints :: [[(Int, Int, Int)]] -> [GridPoint]
+makeGridPoints = concatMap (map (\(h, x, y) -> GridPoint (x, y) h))
+
+addCoords :: [[Int]] -> [[(Int, Int, Int)]]
+addCoords = addYCoords . addHeights
+  where
+    addHeights = map (\row -> zip row [0 :: Int ..])
+    addYCoords = zipWith (\y row -> map (\(h, x) -> (h, x, y)) row) [0 :: Int ..]
+
+getParsedInput :: IO [[Int]]
+getParsedInput = do
+  rawInput <- readFile "data/day9.txt"
+  return $ map (map (\p -> read p :: Int) . tail . splitOn "") $ lines rawInput
 
 rund9 :: IO ()
 rund9 = do
-  rawInput <- readFile "data/day9.txt"
-  let grid = map (\row -> zip ((map (\x -> read x :: Int) . tail . splitOn "") row) [0 :: Int ..]) $ lines rawInput
-  let lowestPoints = findLowestPoints grid
-  let partOne = sum $ map (\(height, _) -> height + 1) lowestPoints
+  parsedInput <- addCoords <$> getParsedInput
+  let gridPoints = makeGridPoints parsedInput
+  let lowestPoints = findLowPoints gridPoints
+  let partOne = sum $ map (\gp -> height gp + 1) lowestPoints
   print partOne
-  putStrLn "Hello, World!"
+  let partTwo = product $ take 3 $ sortBy (comparing Data.Ord.Down) (map length $ intoPools gridPoints [])
+  print partTwo
