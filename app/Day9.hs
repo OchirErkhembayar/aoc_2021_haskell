@@ -1,9 +1,10 @@
 module Day9 (rund9) where
 
 import Data.List (sortBy)
-import Data.List.Split (splitOn)
 import Data.Ord (comparing)
 import qualified Data.Ord
+import qualified Data.Text as T
+import qualified Data.Text.IO as TIO
 
 type Pool = [GridPoint]
 
@@ -35,21 +36,7 @@ addIfContains :: Pool -> GridPoint -> Pool
 addIfContains pool gp = if gp `elem` pool then pool else gp : pool
 
 findNeighbours :: [GridPoint] -> GridPoint -> [GridPoint]
-findNeighbours gps gp = filter (isNeighbour gp) gps
-
-isNeighbour :: GridPoint -> GridPoint -> Bool
-isNeighbour original comparitor = isBeside || isAboveOrBelow
-  where
-    (x1, y1) = location original
-    (x2, y2) = location comparitor
-    left = x1 - x2 == 1
-    right = x1 - x2 == -1
-    top = y1 - y2 == 1
-    bottom = y1 - y2 == -1
-    vertical = x1 == x2
-    horizontal = y1 == y2
-    isBeside = (left || right) && horizontal
-    isAboveOrBelow = (top || bottom) && vertical
+findNeighbours gps gp = filter (adjacent gp) gps
 
 removePoint :: [GridPoint] -> GridPoint -> [GridPoint]
 removePoint gps gp = filter (\p -> location p /= location gp) gps
@@ -89,8 +76,8 @@ addCoords = addYCoords . addHeights
 
 getParsedInput :: IO [[Int]]
 getParsedInput = do
-  rawInput <- readFile "data/day9.txt"
-  return $ map (map (\p -> read p :: Int) . tail . splitOn "") $ lines rawInput
+  rawInput <- TIO.readFile "data/day9.txt"
+  return $ map (map (\p -> read (T.unpack p) :: Int) . T.chunksOf 1) $ T.lines rawInput
 
 rund9 :: IO ()
 rund9 = do

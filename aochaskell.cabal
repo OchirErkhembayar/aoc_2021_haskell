@@ -78,7 +78,8 @@ executable aoc_2021_haskell
         base,
         split,
         QuickCheck,
-        containers
+        containers,
+        text
 
     -- Directories containing source files.
     hs-source-dirs:   app
